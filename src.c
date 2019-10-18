@@ -68,7 +68,12 @@ int main() {
 	}
 	else if (temp_fork > 0) {
 		close(fd1[0]);
-		while (read(2, &temp_ch, sizeof(char)) == sizeof(char)) {
+		int out;
+		while ((out = read(2, &temp_ch, sizeof(char))) != 0) {
+			if (out == -1)
+			{
+				exit(1);
+			}
 			write_size = write(fd1[1], &temp_ch, sizeof(char));
 			if (write_size != sizeof(char)) {
 				printf("Can\'t write char\n");
@@ -83,7 +88,11 @@ int main() {
 		}
 		cnt = read_size = write_size = 0;
 
-		while (read(2, &temp_ch, sizeof(char)) == sizeof(char)) {
+		while ((out = read(2, &temp_ch, sizeof(char))) != 0 ) {
+			if (out == -1)
+			{
+				exit(1);
+			}
 			write_size = write(fd1[1], &temp_ch, sizeof(char));
 			if (write_size != sizeof(char)) {
 				printf("Can\'t write char\n");
