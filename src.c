@@ -54,6 +54,7 @@ int bmh(char *str, int str_len, char *pattern, int pat_len) {
 int main() {
 	char temp_ch;
 	int fd1[2], fd2[2], temp_fork, cnt = 0;
+	int read_size, write_size;
 
 	if (pipe(fd1) == -1 || pipe(fd2) == -1) {
 		printf("Can\'t create pipe");
@@ -67,23 +68,43 @@ int main() {
 	}
 	else if (temp_fork > 0) {
 		close(fd1[0]);
-		while (read(2, &temp_ch, sizeof(char) == 1)) {
-			write(fd1[1], &temp_ch, sizeof(char));
+		while (read(2, &temp_ch, sizeof(char)) == sizeof(char)) {
+			write_size = write(fd1[1], &temp_ch, sizeof(char));
+			if (write_size != sizeof(char)) {
+				printf("Can\'t write char\n");
+				exit(-1);
+			}
 			cnt++;
 		}
-		write(fd2[1], &cnt, sizeof(int));
-		cnt = 0;
+		write_size = write(fd2[1], &cnt, sizeof(int));
+		if (write_size != sizeof(int)) {
+			printf("Can\'t write size of string\n");
+			exit(-1);
+		}
+		cnt = read_size = write_size = 0;
 
-		while (read(2, &temp_ch, sizeof(char) == 1)) {
-			write(fd1[1], &temp_ch, sizeof(char));
+		while (read(2, &temp_ch, sizeof(char)) == sizeof(char)) {
+			write_size = write(fd1[1], &temp_ch, sizeof(char));
+			if (write_size != sizeof(char)) {
+				printf("Can\'t write char\n");
+				exit(-1);
+			}
 			cnt++;
 		}
-		write(fd2[1], &cnt, sizeof(int));
-		cnt = 0;
+		write_size = write(fd2[1], &cnt, sizeof(int));
+		if (write_size != sizeof(int)) {
+			printf("Can\'t write size of pattern\n");
+			exit(-1);
+		}
+		cnt = read_size = 0;
 
 		wait(NULL);
 
-		read(fd2[0], &cnt, sizeof(int));
+		read_size = read(fd2[0], &cnt, sizeof(int));
+		if (read_size != sizeof(int)) {
+			printf("Can\'t read result");
+			exit(-1);
+		}
 		printf("%d\n", cnt);
 		close(fd1[1]);
 		close(fd2[0]);
@@ -93,18 +114,36 @@ int main() {
 		close(fd1[1]);
 		int str_size, pat_size, result;
 
-		read(fd2[0], &str_size, sizeof(int));
+		read_size = read(fd2[0], &str_size, sizeof(int));
+		if (read_size != sizeof(int)) {
+			printf("Can\'t read size of string");
+			exit(-1);
+		}
 		char *str = (char *) malloc(sizeof(char *) * str_size);
-		read(fd1[0], str, sizeof(char) * str_size);
-		str[strlen(str) - 1] = '\0';
+		read_size = read(fd1[0], str, sizeof(char) * str_size);
+		if (read_size != sizeof(char) * str_size) {
+			printf("Can\'t read string\n");
+			exit(-1);
+		}
 
-		read(fd2[0], &pat_size, sizeof(int));
+		read_size = read(fd2[0], &pat_size, sizeof(int));
+		if (read_size != sizeof(int)) {
+			printf("Can\'t read size of pattern");
+			exit(-1);
+		}
 		char *pattern = (char *) malloc(sizeof(char *) * pat_size);
-		read(fd1[0], pattern, sizeof(char) * pat_size);
-		pattern[strlen(pattern) - 1] = '\0';
+		read_size = read(fd1[0], pattern, sizeof(char) * pat_size);
+		if (read_size != sizeof(char) * pat_size) {
+			printf("Can\'t read pattern\n");
+			exit(-1);
+		}
 
 		result = bmh(str, str_size - 1, pattern, pat_size - 1);
-		write(fd2[1], &result, sizeof(int));
+		write_size = write(fd2[1], &result, sizeof(int));
+		if (write_size != sizeof(int)) {
+			printf("Can\'t write result\n");
+			exit(-1);
+		}
 		close(fd1[0]);
 		close(fd2[0]);
 		close(fd2[1]);
