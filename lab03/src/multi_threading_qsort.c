@@ -68,11 +68,14 @@ void *Quick_sort(void *arg) {
 	return NULL;
 }
 
-int main() {
+int main(int argc, char **argv) {
+	if (argc < 2) {
+		printf("Input number of threads: ./multi_threading_qsort <threads>\n");
+		return 0;
+	}
+	THREAD_MAX = atoi(argv[1]);
 	printf("Input number of elements in the array: ");
 	scanf("%d", &MAX);
-	printf("Input THREAD_MAX: ");
-	scanf("%d", &THREAD_MAX);
 	char **A = (char **) malloc(sizeof(char *) * MAX);
 	for (int i = 0; i < MAX; i++) {
         A[i] = (char*)malloc(sizeof(char)*30);
