@@ -24,7 +24,7 @@ int Partion(char **A, int p, int r) {
 	char *x = A[r];
 	int i = p - 1;
 	for (int j = p; j <= r - 1; j++) {
-		if (/*less_eq_str(A[j], x)*/strcmp(A[j], x) <= 0) {
+		if (strcmp(A[j], x) <= 0) {
 			i++;
 			swap(&A[i], &A[j]);
 		}
