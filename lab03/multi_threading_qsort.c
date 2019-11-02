@@ -20,30 +20,6 @@ void swap(char **o1, char **o2) {
 	*o2 = tmp;
 }
 
-int min_int(int i1, int i2) {
-	return i1 <= i2 ? i1 : i2;
-}
-
-int less_eq_str(char *str1, char *str2) {
-	int min = min_int(strlen(str1), strlen(str2)), min_str;
-	if (strlen(str1) <= strlen(str2)) {
-		min_str = 1;
-	}
-	else {
-		min_str = 0;
-	}
-	for (int i = 0; i < min; i++) {
-		if (str1[i] < str2[i]) {
-			return 1;
-		} 
-		else if (str1[i] > str2[i]) {
-			return 0;
-		}
-	}
-
-	return min_str;
-}
-
 int Partion(char **A, int p, int r) {
 	char *x = A[r];
 	int i = p - 1;
