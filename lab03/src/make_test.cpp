@@ -8,7 +8,7 @@ int main() {
 	int MAX;
 	std::cin >> MAX;
 
-	std::ofstream out("test");
+	std::ofstream out("test.txt");
 	out << MAX << "\n";
 	for (int i = 0; i < MAX; i++) {
 		int rand_cnt = 1 + rand() % 29;

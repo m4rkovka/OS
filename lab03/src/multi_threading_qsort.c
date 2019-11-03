@@ -81,6 +81,7 @@ int main(int argc, char **argv) {
         A[i] = (char*)malloc(sizeof(char)*30);
         scanf("%s", A[i]);
     }
+    printf("______________________________________\n");
 	Args begin_args;
 	begin_args.A = A;
 	begin_args.p = 0;

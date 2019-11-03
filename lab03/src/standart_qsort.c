@@ -40,6 +40,7 @@ int main() {
         A[i] = (char*)malloc(sizeof(char)*30);
         scanf("%s", A[i]);
     }
+    printf("______________________________________\n");
 
 	Quicksort(A, 0, MAX - 1);
 	for (int i = 0; i < MAX; i++) {
