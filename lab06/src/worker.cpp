@@ -171,7 +171,11 @@ int main(int argc, char **argv) {
             std::ostringstream stream;
             for (auto it = sockets.begin(); it != sockets.end(); it++) {
                 send_message(it->second, "ping");
-                stream << receive_message(it->second);
+                std::string str = receive_message(it->second);
+                if (str == "Error: Node is not available") {
+                    continue;
+                }
+                stream << str;
             }
             stream << id << " ";
             send_message(parent_socket, stream.str());
