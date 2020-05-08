@@ -222,10 +222,6 @@ int main() {
                 responded_id.insert(temp);
             }
             std::set<int> all_id = topology.GetNodes();
-            if (all_id.size() == responded_id.size()) {
-                std::cout << "Ok: -1\n";
-                continue;
-            }
             std::set<int> result_set;
             auto it_resp = responded_id.begin();
             auto it_all = all_id.begin();
@@ -239,6 +235,10 @@ int main() {
                 }
             }
             std::cout << "Ok: ";
+            if (result_set.empty()) {
+                std::cout << "-1\n";
+                continue;
+            }
             for (auto it : result_set) {
                 std::cout << it << ";";
             }
