@@ -1,0 +1,4 @@
+#ifndef LOCK_QUEUE_HPP
+#define LOCK_QUEUE_HPP 1
+
+#endif // LOCK_QUEUE_HPP
