@@ -9,11 +9,33 @@ namespace lockFree {
     // Число hazard pointer в одном потоке
     constexpr unsigned K = 2;
     // Число потоков
-    constexpr unsigned P = 4;
+    constexpr unsigned P = 8;
     // Общее число hazard pointers = K * P
     constexpr unsigned N = K * P;
     // batch size
     constexpr unsigned R = 2 * N;
+
+    class exp_backoff {
+        const int nInitial;
+        const int nStep;
+        const int nThreshold;
+        int nCurrent;
+    public:
+        exp_backoff(int init = 10, int step = 2, int threshold = 8000)
+            : nInitial(init), nStep(step), nThreshold(threshold) {}
+        void operator()() {
+            for (int k = 0; k < nCurrent; k++) {
+                asm volatile ("nop"::);
+            }
+            nCurrent *= nStep;
+            if (nCurrent > nThreshold) {
+                nCurrent = nThreshold;
+            }
+        }
+        void reset() {
+            nCurrent = nInitial;
+        }
+    };
 
     template<typename T>
     class Queue {
@@ -143,6 +165,7 @@ namespace lockFree {
 
         void enqueue(const T& data, int tNum) {
             node *pNew = new node(data);
+            exp_backoff bkoff{};
             node *t;
             for(;;) {
                 t = m_Tail.load(std::memory_order_relaxed);
@@ -159,12 +182,14 @@ namespace lockFree {
                 if (t->next.compare_exchange_weak(tmp, pNew, std::memory_order_release)) {
                     break;
                 }
+                bkoff();
             }
             m_Tail.compare_exchange_strong(t, pNew, std::memory_order_acq_rel);
             HP[tNum][0] = nullptr;
         }
 
         bool dequeue(T &dest, int tNum) {
+            exp_backoff bkoff{};
             node *h;
             for (;;) {
                 h = m_Head.load(std::memory_order_relaxed);
@@ -187,6 +212,7 @@ namespace lockFree {
                 dest = next->data;
                 if (m_Head.compare_exchange_strong(h, next, std::memory_order_release))
                     break;
+                bkoff();
             }
             HP[tNum][0] = nullptr;
             HP[tNum][1] = nullptr;
