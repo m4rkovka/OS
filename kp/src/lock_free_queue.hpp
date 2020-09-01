@@ -9,7 +9,7 @@ namespace lockFree {
     // Число hazard pointer в одном потоке
     constexpr unsigned K = 2;
     // Число потоков
-    constexpr unsigned P = 8;
+    constexpr unsigned P = 10;
     // Общее число hazard pointers = K * P
     constexpr unsigned N = K * P;
     // batch size
