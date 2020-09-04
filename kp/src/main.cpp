@@ -8,12 +8,15 @@
 #include "lock_queue.hpp"
 #include "timer.hpp"
 
-constexpr unsigned CNT_PUSH = 10000000;
-constexpr unsigned CNT_POP = 2500000;
+constexpr unsigned CNT_PUSH = 50000000;
+constexpr unsigned CNT_POP = 12500000;
 
 int main() {
     lockFree::Queue<int> q;
     std::thread tArr[lockFree::P];
+    std::cout << "CNT OF THREADS: " << lockFree::P  << "\n";
+    std::cout << "CNT PUSH: " << CNT_PUSH << "\n";
+    std::cout << "CNT POP: " << CNT_POP << "\n";
     {
         std::cout << "LOCK FREE QUEUE "; 
         timer t;
@@ -85,37 +88,6 @@ int main() {
             tArr[i].join();
         }
     }
-    std::queue<int, std::list<int>> sql;
-    {
-        std::cout << "STD QUEUE LIST "; 
-        timer t;
-        for (int i = 0; i < lockFree::P; i++) {
-            if (i % 2 == 0) {
-                for (int j = 0; j < CNT_PUSH; j++) {
-                    sql.push(j);
-                }
-            } else {
-                for (int j = 0; j < CNT_POP; j++) {
-                    sql.pop();
-                }
-            }
-        }
-    }
-    std::queue<int, std::deque<int>> sqd;
-    {
-        std::cout << "STD QUEUE DEQUE "; 
-        timer t;
-        for (int i = 0; i < lockFree::P; i++) {
-            if (i % 2 == 0) {
-                for (int j = 0; j < CNT_PUSH; j++) {
-                    sqd.push(j);
-                }
-            } else {
-                for (int j = 0; j < CNT_POP; j++) {
-                    sqd.pop();
-                }
-            }
-        }
-    }
+
     return 0;
 }
