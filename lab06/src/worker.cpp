@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     int parent_id = std::stoi(argv[2]);
     int parent_port = std::stoi(argv[3]);
 
-    zmq::context_t context(3); // у Димы написано "сыну, брату и отцу", т.е., скорее всего, для каждого узла будет свой поток обработки сообщений
+    zmq::context_t context(3); 
     zmq::socket_t parent_socket(context, ZMQ_REP); // создаем сокет, который отправляет ответы на запросы
     parent_socket.connect(get_port_name(parent_port)); // подключаем созданный сокет к тому же порту, что и переданный по аргументу
 
