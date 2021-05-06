@@ -11,10 +11,10 @@
 #include "lab_api.hpp"
 
 int main() {
-    std::string command; //строка для команд
-    TTree topology; // дерево
-    int child_pid; // id дочернего потока
-    zmq::context_t context(1); // 1 означает размер пула потоков для передачи сообщений
+    std::string command; 
+    TTree topology; 
+    int child_pid; 
+    zmq::context_t context(1); 
     std::map<int, zmq::socket_t> sockets; // словарь для сокетов, где
     // первый аргумент - id сокета
     // второй аргумент - сокет
@@ -26,14 +26,14 @@ int main() {
     // второй аргумент - порт
 
     while (std::cin >> command) {
-        std::string res; // строка для результата
+        std::string res; 
         int linger = 0; // задержка после закрытия сокета
         if (command == "create" || command == "c") {
-            int new_id, parent_id; // переменные для id вычислительного и родительского узлов
+            int new_id, parent_id; 
             std::cin >> new_id >> parent_id;
             if (parent_id == -1 && pids.count(new_id) == 0) { // добавление вычислительного узла к управляющему, т.е. к корню
                 sockets.emplace(new_id, zmq::socket_t(context, ZMQ_REQ)); // в словарь вставляется запрашивающий сокет с id new_id
-                sockets.at(new_id).setsockopt(ZMQ_LINGER, &linger, sizeof(linger)); // для нового сокета устанавливается опция zmq_linger
+                sockets.at(new_id).setsockopt(ZMQ_LINGER, &linger, sizeof(linger)); 
                 // для задержки после закрытия сокета, чтобы сообщения не отбрасывались в течение linger
                 sockets.at(new_id).setsockopt(ZMQ_SNDTIMEO, 20); // для нового сокета устанавливается опция zmq_sndtimeo
                 // для определения интервала ожидания отправки сообщения, если сообщение за этот период не будет отправлено, то вернется ошибка eagain
@@ -45,10 +45,9 @@ int main() {
                 } else if (child_pid == 0) { // дочерний процесс
                     create_server(new_id, parent_id, port);
                 } else {
-                    // заполнение словарей
                     ports[new_id] = port;
                     pids[new_id] = child_pid;
-                    //
+                    
                     send_message(sockets.at(new_id), "pid");
                     res = receive_message(sockets.at(new_id));
                 }
@@ -86,7 +85,7 @@ int main() {
         } else if (command == "remove" || command == "r") {
             int remove_id;
             std::cin >> remove_id;
-            if (pids.size() == 0) { // если нет узлов
+            if (pids.size() == 0) { 
                 std::cout << "Error: Not found\n";
                 continue;
             }
